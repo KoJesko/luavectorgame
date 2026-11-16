@@ -19,6 +19,10 @@ on:
   schedule:
     - cron: '16 9 * * 1'
 
+# Least privilege by default; the analyze job grants only what CodeQL needs.
+permissions:
+  contents: read
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -51,6 +55,11 @@ jobs:
         # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
         # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
         # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
+        #
+        # This repository's code is Lua (main.lua, a LÖVE game), which CodeQL does not support.
+        # The only applicable CodeQL language is 'actions', which scans the workflow files in .github/workflows.
+        - language: actions
+          build-mode: none
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
